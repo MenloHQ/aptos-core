@@ -2,13 +2,25 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pub mod account;
+pub mod aptos_lib;
 pub mod signature;
 
 use move_core_types::{account_address::AccountAddress, identifier::Identifier};
 use move_vm_runtime::native_functions::{NativeFunction, NativeFunctionTable};
 
+pub mod cost {
+    pub const APTOS_LIB_TYPE_OF: u64 = 10;
+}
+
+pub mod status {
+    // Failure in parsing a struct type tag
+    pub const NFE_EXPECTED_STRUCT_TYPE_TAG: u64 = 0x1;
+}
+
 pub fn all_natives(framework_addr: AccountAddress) -> NativeFunctionTable {
     const NATIVES: &[(&str, &str, NativeFunction)] = &[
+        ("AptosLib", "type_of", aptos_lib::type_of),
+        ("Account", "create_signer", account::native_create_signer),
         (
             "Signature",
             "ed25519_validate_pubkey",
@@ -19,7 +31,6 @@ pub fn all_natives(framework_addr: AccountAddress) -> NativeFunctionTable {
             "ed25519_verify",
             signature::native_ed25519_signature_verification,
         ),
-        ("Account", "create_signer", account::native_create_signer),
     ];
     NATIVES
         .iter()
