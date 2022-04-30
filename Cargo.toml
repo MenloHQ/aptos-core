@@ -1,6 +1,5 @@
 [workspace]
 resolver = "2"
-
 members = [
     "api",
     "api/types",
@@ -115,7 +114,6 @@ members = [
     "types",
     "vm-validator",
 ]
-
 # NOTE: default-members is the complete list of binaries that form the "production Aptos codebase". These members should
 # never include crates that require fuzzing features or test features. These are the crates we want built with no extra
 # test-only code included.
@@ -149,3 +147,6 @@ debug = true
 # Build guppy in opt mode so that x commands are faster.
 [profile.dev.package.guppy]
 opt-level = 3
+
+[patch.crates-io]
+serde-reflection = { git = "https://github.com/aptos-labs/serde-reflection" }
