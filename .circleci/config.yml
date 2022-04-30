@@ -69,27 +69,27 @@ jobs:
           shell: /bin/bash
           command: |
             # Check if an image is already built at this image tag
-            MANIFEST=$(aws ecr batch-get-image --repository-name aptos/validator --image-ids imageTag=$IMAGE_TAG --query 'images[].imageManifest' --output text)
-            echo $MANIFEST
-            if [ -z "$MANIFEST" ]; then
-              echo "Image tag $IMAGE_TAG not present. Starting build all..."
-              ./docker/build-aws.sh --build-all --version $(git rev-parse --short=8 HEAD) --addl_tags "<<parameters.addl_tag>>,${ADDL_IMAGE_TAG}"
-            else
-              echo "Image tag $IMAGE_TAG already present. Skipping build..."
-              echo "Continue retagging to <<parameters.addl_tag>>"
-              ret=0
-              for img in "${AWS_ECR_IMAGES[@]}"
-              do
-                # Get the image manifest for the already-built image and put it at different image tags
-                MANIFEST=$(aws ecr batch-get-image --repository-name aptos/${img} --image-ids imageTag=$IMAGE_TAG --query 'images[].imageManifest' --output text)
-                put_img_out=$(aws ecr put-image --repository-name aptos/${img} --image-tag "<<parameters.addl_tag>>" --image-manifest "$MANIFEST" 2>&1)
-                put_img_out_addl=$(aws ecr put-image --repository-name aptos/${img} --image-tag "${ADDL_IMAGE_TAG}" --image-manifest "$MANIFEST" 2>&1)
-                ret=$?
-                # ok if image tag exists and cannot overwrite
-                echo $put_img_out $put_img_out_addl | grep 'ImageAlreadyExistsException' && ret=0
-              done
-              exit $ret
-            fi
+            # MANIFEST=$(aws ecr batch-get-image --repository-name aptos/validator --image-ids imageTag=$IMAGE_TAG --query 'images[].imageManifest' --output text)
+            # echo $MANIFEST
+            # if [ -z "$MANIFEST" ]; then
+            # echo "Image tag $IMAGE_TAG not present. Starting build all..."
+            ./docker/build-aws.sh --build-all --version $(git rev-parse --short=8 HEAD) --addl_tags "<<parameters.addl_tag>>,${ADDL_IMAGE_TAG}"
+            # else
+            #   echo "Image tag $IMAGE_TAG already present. Skipping build..."
+            #   echo "Continue retagging to <<parameters.addl_tag>>"
+            #   ret=0
+            #   for img in "${AWS_ECR_IMAGES[@]}"
+            #   do
+            #     # Get the image manifest for the already-built image and put it at different image tags
+            #     MANIFEST=$(aws ecr batch-get-image --repository-name aptos/${img} --image-ids imageTag=$IMAGE_TAG --query 'images[].imageManifest' --output text)
+            #     put_img_out=$(aws ecr put-image --repository-name aptos/${img} --image-tag "<<parameters.addl_tag>>" --image-manifest "$MANIFEST" 2>&1)
+            #     put_img_out_addl=$(aws ecr put-image --repository-name aptos/${img} --image-tag "${ADDL_IMAGE_TAG}" --image-manifest "$MANIFEST" 2>&1)
+            #     ret=$?
+            #     # ok if image tag exists and cannot overwrite
+            #     echo $put_img_out $put_img_out_addl | grep 'ImageAlreadyExistsException' && ret=0
+            #   done
+            #   exit $ret
+            # fi
   ecr-dockerhub-mirror:
     executor: ubuntu-medium
     parameters:

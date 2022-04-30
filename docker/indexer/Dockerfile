@@ -16,7 +16,6 @@ RUN rustup install $(cat rust-toolchain)
 
 FROM toolchain AS builder
 
-ARG ENABLE_FAILPOINTS
 COPY . /aptos
 
 RUN IMAGE_TARGETS="release" ./docker/build-common.sh
